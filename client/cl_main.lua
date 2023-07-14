@@ -7,7 +7,7 @@ local SetJobCooldown = false
 local PedHasSpawned = false
 local Ped = nil
 
-local AOP = Config.ResourceSettings['AOP']
+local AreaOfAiCalls = Config.ResourceSettings['Job']['AOP']
 
 -- [[ Resource Metadata ]] --
 AddEventHandler('onResourceStop', function(resource)
@@ -36,7 +36,7 @@ RegisterNetEvent('LENT-AICalls:Client:StartMedicMission', function()
     end
 end)
 
-RegisterNetEvent('LENT-AICalls:Client:ReviveSelectedPed', function()
+RegisterNetEvent('LENT-AICalls:Client:ReviveSelectedPed', function(AI)
     if QBCore.Functions.HasItem(Config.ResourceSettings['ReviveItem']) then
         ExecuteCommand('e medic')
         QBCore.Functions.Progressbar('reviving_ped', 'Checking for Injuries....', 5000, false, true, { -- Name | Label | Time | useWhileDead | canCancel
@@ -50,9 +50,12 @@ RegisterNetEvent('LENT-AICalls:Client:ReviveSelectedPed', function()
             Wait(500)
             TriggerServerEvent('LENT-AICalls:Server:RemoveItem')
             TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items[Config.ResourceSettings['ReviveItem']], "remove")
-            ClearPedTasks(Ped)
-            SetPedMovementClipset(Ped, "move_m@injured", 1)
-            TaskGoStraightToCoord(Ped, 0, 0, 0, 5, 10000, 0)
+            SetEntityInvincible(AI, false)
+            SetEntityHealth(AI, 200)
+            FreezeEntityPosition(AI, false)
+            ClearPedTasks(AI)
+            SetPedMovementClipset(AI, "move_injured_generic", 1)
+            TaskGoStraightToCoord(AI, 0, 0, 0, 5, 10000, 0)
             TriggerServerEvent('LENT-AICalls:Server:GiveCash')
             RemoveBlip(WaypointBlip)
         end, function() -- Play When Cancel
@@ -64,7 +67,7 @@ RegisterNetEvent('LENT-AICalls:Client:ReviveSelectedPed', function()
 end)
 
 RegisterNetEvent('LENT-AICalls:Client:ChangeAOP', function(newAop)
-    AOP = newAop
+    AreaOfAiCalls = newAop
     local AOPText = nil
 
     if QBCore.Functions.GetPlayerData().job.name == Config.ResourceSettings['Job']['JobName'] then
@@ -92,7 +95,7 @@ end)
 -- end
 
 function GetRandomLocation()
-    PedLocation = Config.ResourceSettings['PedLocations'][math.random(1, 55)]
+    PedLocation = Config.ResourceSettings['PedLocations'][AreaOfAiCalls][math.random(1, 55)]
     Wait(500)
     MedicAlert(PedLocation.x, PedLocation.y, PedLocation.z)
     if Config.GlobalSettings['Waypoint'] == 'default' then
@@ -124,7 +127,9 @@ function SpawnDowned()
         Wait(0)
     end
 
-    Ped = CreatePed(0, Config.ResourceSettings['PedSelection'][selectedPed], PedLocation.x, PedLocation.y, PedLocation.z, false, false)
+    Ped = CreatePed(0, Config.ResourceSettings['PedSelection'][selectedPed], PedLocation.x, PedLocation.y, PedLocation.z - 1, false, false)
+
+    TaskStartScenarioInPlace(Ped, 'WORLD_HUMAN_SUNBATHE_BACK', -1, false)
 
     PedHasSpawned = true
 
@@ -132,26 +137,46 @@ function SpawnDowned()
         options = {
             {
                 type = 'client',
-                event = 'LENT-AICalls:Client:ReviveSelectedPed',
+                -- event = 'LENT-AICalls:Client:ReviveSelectedPed',
                 label = 'Give Meddical Attention',
                 icon = 'fa-solid fa-syringe',
                 canInteract = function()
-                    if PedHasSpawned == true then return true end
+                    if PedHasSpawned then
+                        return true
+                    end
+
                     return false
+                end,
+                action = function()
+                    if QBCore.Functions.HasItem(Config.ResourceSettings['ReviveItem']) then
+                        ExecuteCommand('e medic')
+                        QBCore.Functions.Progressbar('reviving_ped', 'Checking for Injuries....', 5000, false, true, { -- Name | Label | Time | useWhileDead | canCancel
+                            disableMovement = true,
+                            disableCarMovement = true,
+                            disableMouse = false,
+                            disableCombat = true,
+                        }, {}, {}, {}, function() -- Play When Done
+                            ExecuteCommand('e c')
+                            PedHasSpawned = false
+                            Wait(500)
+                            TriggerServerEvent('LENT-AICalls:Server:RemoveItem')
+                            TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items[Config.ResourceSettings['ReviveItem']], "remove")
+                            ClearPedTasks(Ped)
+                            SetPedMovementClipset(Ped, "move_injured_generic", 1)
+                            TaskGoStraightToCoord(Ped, 0, 0, 0, 5, 10000, 0)
+                            TriggerServerEvent('LENT-AICalls:Server:GiveCash')
+                            RemoveBlip(WaypointBlip)
+                        end, function() -- Play When Cancel
+                            ExecuteCommand('e c')
+                        end)
+                    else
+                        Notify('client', 'You don\'t have ' .. Config.ResourceSettings['ReviveItem'] .. ' on you!', 'error')
+                    end
                 end,
             },
         },
         disance = 2.0
     })
-
-    -- while PedHasSpawned == true do
-    --     Wait(0)
-    --     LoadAnimDict(missarmenian2)
-    --     TaskPlayAnim(Ped, 'missarmenian2', 'corpse_search_exit_ped', 8.0, 8.0, -1, 1, 0, 0, 0, 0)
-    -- end
-    -- [[ Below is sneaky work around.... ]] --
-
-    SetPedToRagdoll(Ped, 1000, 1000, 0, 0, 0, 0)
 end
 
 -- [[ Threads ]] --

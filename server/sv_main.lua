@@ -7,8 +7,8 @@ local QBCore = exports['qb-core']:GetCoreObject()
 
 -- [[ Net Events ]] --
 RegisterNetEvent('LENT-AICalls:Server:GiveCash', function(source)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
+    local Player = QBCore.Functions.GetPlayer(source)
+    if not Player then return end
     local paycheck = Config.ResourceSettings['Payment']
 
     if Config.ResourceSettings['PayCash'] == true then
