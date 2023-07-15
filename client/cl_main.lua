@@ -36,36 +36,6 @@ RegisterNetEvent('LENT-AICalls:Client:StartMedicMission', function()
     end
 end)
 
-RegisterNetEvent('LENT-AICalls:Client:ReviveSelectedPed', function(AI)
-    if QBCore.Functions.HasItem(Config.ResourceSettings['ReviveItem']) then
-        ExecuteCommand('e medic')
-        QBCore.Functions.Progressbar('reviving_ped', 'Checking for Injuries....', 5000, false, true, { -- Name | Label | Time | useWhileDead | canCancel
-            disableMovement = true,
-            disableCarMovement = true,
-            disableMouse = false,
-            disableCombat = true,
-        }, {}, {}, {}, function() -- Play When Done
-            ExecuteCommand('e c')
-            PedHasSpawned = false
-            Wait(500)
-            TriggerServerEvent('LENT-AICalls:Server:RemoveItem')
-            TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items[Config.ResourceSettings['ReviveItem']], "remove")
-            SetEntityInvincible(AI, false)
-            SetEntityHealth(AI, 200)
-            FreezeEntityPosition(AI, false)
-            ClearPedTasks(AI)
-            SetPedMovementClipset(AI, "move_injured_generic", 1)
-            TaskGoStraightToCoord(AI, 0, 0, 0, 5, 10000, 0)
-            TriggerServerEvent('LENT-AICalls:Server:GiveCash')
-            RemoveBlip(WaypointBlip)
-        end, function() -- Play When Cancel
-            ExecuteCommand('e c')
-        end)
-    else
-        Notify('client', 'You don\'t have ' .. Config.ResourceSettings['ReviveItem'] .. ' on you!', 'error')
-    end
-end)
-
 RegisterNetEvent('LENT-AICalls:Client:ChangeAOP', function(newAop)
     AreaOfAiCalls = newAop
     local AOPText = nil
@@ -177,9 +147,10 @@ function SpawnDowned()
                             TaskGoStraightToCoord(Ped, 0, 0, 0, 5, 10000, 0)
                             TriggerServerEvent('LENT-AICalls:Server:GiveCash')
                             RemoveBlip(WaypointBlip)
+                            CurrentlyOnJob = false
                         end, function() -- Play When Cancel
                             ExecuteCommand('e c')
-                        end)
+                        end, Config.ResourceSettings['ReviveItem'])
                     else
                         Notify('client', 'You don\'t have ' .. Config.ResourceSettings['ReviveItem'] .. ' on you!', 'error')
                     end
