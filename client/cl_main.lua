@@ -87,15 +87,16 @@ RegisterNetEvent('LENT-AICalls:Client:ChangeAOP', function(newAop)
 end)
 
 -- [[ Functions ]] --
--- function LoadAnimDict(dict)
---     while (not HasAnimDictLoaded(dict)) do
---         RequestAnimDict(dict)
---         Wait(5)
---     end
--- end
+function LoadAnimDict(dict)
+    while (not HasAnimDictLoaded(dict)) do
+        RequestAnimDict(dict)
+        Wait(5)
+    end
+end
 
 function GetRandomLocation()
-    PedLocation = Config.ResourceSettings['PedLocations'][AreaOfAiCalls][math.random(1, 55)]
+    GetPedConfig = Config.ResourceSettings['PedLocations'][AreaOfAiCalls]
+    PedLocation = (GetPedConfig[math.random(#GetPedConfig)])
     Wait(500)
     MedicAlert(PedLocation.x, PedLocation.y, PedLocation.z)
     if Config.GlobalSettings['Waypoint'] == 'default' then
@@ -129,7 +130,15 @@ function SpawnDowned()
 
     Ped = CreatePed(0, Config.ResourceSettings['PedSelection'][selectedPed], PedLocation.x, PedLocation.y, PedLocation.z - 1, false, false)
 
-    TaskStartScenarioInPlace(Ped, 'WORLD_HUMAN_SUNBATHE_BACK', -1, false)
+    -- TaskStartScenarioInPlace(Ped, 'WORLD_HUMAN_SUNBATHE_BACK', -1, false)
+    local deadAnimDict = "dead"
+    local deadAnim = "dead_a"
+    
+    LoadAnimDict(deadAnimDict)
+    TaskPlayAnim(Ped, deadAnimDict, deadAnim, 1.0, 1.0, -1, 1, 0, 0, 0, 0)
+
+    SetBlockingOfNonTemporaryEvents(Ped, true)
+    FreezeEntityPosition(Ped, true)
 
     PedHasSpawned = true
 
@@ -161,6 +170,8 @@ function SpawnDowned()
                             Wait(500)
                             TriggerServerEvent('LENT-AICalls:Server:RemoveItem')
                             TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items[Config.ResourceSettings['ReviveItem']], "remove")
+                            SetBlockingOfNonTemporaryEvents(Ped, false)
+                            FreezeEntityPosition(Ped, false)
                             ClearPedTasks(Ped)
                             SetPedMovementClipset(Ped, "move_injured_generic", 1)
                             TaskGoStraightToCoord(Ped, 0, 0, 0, 5, 10000, 0)
