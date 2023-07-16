@@ -81,7 +81,7 @@ Config.ResourceSettings = {
             [55] = vector4(-1035.57, -1571.42, 5.12, 35.96),
         },
         ['SS'] = {
-
+            -- Coming Soon!
         },
         ['GS'] = {
             [1] = vector4(2034.48, 4982.56, 41.09, 276.26),
@@ -106,9 +106,10 @@ Config.ResourceSettings = {
             [20] = vector4(2300.56, 4881.47, 41.81, 196.8),
         },
         ['PB'] = {
-
+            -- Coming Soon!
         },
         ['SA'] = {
+            -- Coming Soon!
             -- This is automatically fetched from previous entries
         },
     },
