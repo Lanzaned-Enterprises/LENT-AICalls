@@ -109,7 +109,7 @@ Config.ResourceSettings = {
 
         },
         ['SA'] = {
-
+            -- This is automatically fetched from previous entries
         },
     },
     ['PedSelection'] = {
@@ -133,6 +133,17 @@ Config.ResourceSettings = {
         [18] = `a_m_y_musclbeac_01`,
         [19] = `a_m_y_vinewood_01`,
         [20] = `cs_amandatownley`,
+    },
+    ['Injuries'] = { -- [ TO BE INTEGRATED ]
+        ['InjuriesEnabled'] = true,
+        ['InjuryTypes'] = {
+            -- ['KEY'] = { ['Label'] = '', ['Item'] = '', },
+            [1] = { ['Label'] = 'Small Cut', ['Item'] = 'bandage' },
+            [2] = { ['Label'] = 'Large Cut', ['Item'] = 'bandage' },
+            [3] = { ['Label'] = 'Headache', ['Item'] = 'painkillers' },
+            [4] = { ['Label'] = 'Passed Out', ['Item'] = 'firstaid', },
+            [5] = { ['Label'] = 'Gunshot', ['Item'] = 'firstaid' },
+        },
     }
 }
 

@@ -100,10 +100,9 @@ function SpawnDowned()
 
     Ped = CreatePed(0, Config.ResourceSettings['PedSelection'][selectedPed], PedLocation.x, PedLocation.y, PedLocation.z - 1, false, false)
 
-    -- TaskStartScenarioInPlace(Ped, 'WORLD_HUMAN_SUNBATHE_BACK', -1, false)
     local deadAnimDict = "dead"
     local deadAnim = "dead_a"
-    
+
     LoadAnimDict(deadAnimDict)
     TaskPlayAnim(Ped, deadAnimDict, deadAnim, 1.0, 1.0, -1, 1, 0, 0, 0, 0)
 
@@ -111,6 +110,10 @@ function SpawnDowned()
     FreezeEntityPosition(Ped, true)
 
     PedHasSpawned = true
+
+    if Config.ResourceSettings['Injuries']['InjuriesEnabled'] then
+        ChooseInjury = math.random(#Config.ResourceSettings['Injuries']['InjuryTypes'])
+    end
 
     exports['qb-target']:AddTargetEntity(Ped, {
         options = {
@@ -127,32 +130,62 @@ function SpawnDowned()
                     return false
                 end,
                 action = function()
-                    if QBCore.Functions.HasItem(Config.ResourceSettings['ReviveItem']) then
-                        ExecuteCommand('e medic')
-                        QBCore.Functions.Progressbar('reviving_ped', 'Checking for Injuries....', 5000, false, true, { -- Name | Label | Time | useWhileDead | canCancel
-                            disableMovement = true,
-                            disableCarMovement = true,
-                            disableMouse = false,
-                            disableCombat = true,
-                        }, {}, {}, {}, function() -- Play When Done
-                            ExecuteCommand('e c')
-                            PedHasSpawned = false
-                            Wait(500)
-                            TriggerServerEvent('LENT-AICalls:Server:RemoveItem')
-                            TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items[Config.ResourceSettings['ReviveItem']], "remove")
-                            SetBlockingOfNonTemporaryEvents(Ped, false)
-                            FreezeEntityPosition(Ped, false)
-                            ClearPedTasks(Ped)
-                            SetPedMovementClipset(Ped, "move_injured_generic", 1)
-                            TaskGoStraightToCoord(Ped, 0, 0, 0, 5, 10000, 0)
-                            TriggerServerEvent('LENT-AICalls:Server:GiveCash')
-                            RemoveBlip(WaypointBlip)
-                            CurrentlyOnJob = false
-                        end, function() -- Play When Cancel
-                            ExecuteCommand('e c')
-                        end, Config.ResourceSettings['ReviveItem'])
+                    if Config.ResourceSettings['Injuries']['InjuriesEnabled'] then
+                        if QBCore.Functions.HasItem(Config.ResourceSettings['Injuries']['InjuryTypes'][ChooseInjury]['Item']) then
+                            ExecuteCommand('e medic')
+                            QBCore.Functions.Progressbar('reviving_ped', 'Treating for: ' .. Config.ResourceSettings['Injuries']['InjuryTypes'][ChooseInjury]['Label'] .. '...', 5000, false, true, { -- Name | Label | Time | useWhileDead | canCancel
+                                disableMovement = true,
+                                disableCarMovement = true,
+                                disableMouse = false,
+                                disableCombat = true,
+                            }, {}, {}, {}, function() -- Play When Done
+                                ExecuteCommand('e c')
+                                PedHasSpawned = false
+                                Wait(500)
+                                TriggerServerEvent('LENT-AICalls:Server:RemoveItem')
+                                TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items[Config.ResourceSettings['Injuries']['InjuryTypes'][ChooseInjury]['Item']], "remove")
+                                SetBlockingOfNonTemporaryEvents(Ped, false)
+                                FreezeEntityPosition(Ped, false)
+                                ClearPedTasks(Ped)
+                                SetPedMovementClipset(Ped, "move_injured_generic", 1)
+                                TaskGoStraightToCoord(Ped, 0, 0, 0, 5, 10000, 0)
+                                TriggerServerEvent('LENT-AICalls:Server:GiveCash')
+                                RemoveBlip(WaypointBlip)
+                                CurrentlyOnJob = false
+                            end, function() -- Play When Cancel
+                                ExecuteCommand('e c')
+                            end, Config.ResourceSettings['Injuries']['InjuryTypes'][ChooseInjury]['Item'])
+                        else
+                            Notify('client', 'You don\'t have ' .. Config.ResourceSettings['Injuries']['InjuryTypes'][ChooseInjury]['Item'] .. ' on you!', 'error')
+                        end
                     else
-                        Notify('client', 'You don\'t have ' .. Config.ResourceSettings['ReviveItem'] .. ' on you!', 'error')
+                        if QBCore.Functions.HasItem(Config.ResourceSettings['ReviveItem']) then
+                            ExecuteCommand('e medic')
+                            QBCore.Functions.Progressbar('reviving_ped', 'Treating Injuries....', 5000, false, true, { -- Name | Label | Time | useWhileDead | canCancel
+                                disableMovement = true,
+                                disableCarMovement = true,
+                                disableMouse = false,
+                                disableCombat = true,
+                            }, {}, {}, {}, function() -- Play When Done
+                                ExecuteCommand('e c')
+                                PedHasSpawned = false
+                                Wait(500)
+                                TriggerServerEvent('LENT-AICalls:Server:RemoveItem')
+                                TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items[Config.ResourceSettings['ReviveItem']], "remove")
+                                SetBlockingOfNonTemporaryEvents(Ped, false)
+                                FreezeEntityPosition(Ped, false)
+                                ClearPedTasks(Ped)
+                                SetPedMovementClipset(Ped, "move_injured_generic", 1)
+                                TaskGoStraightToCoord(Ped, 0, 0, 0, 5, 10000, 0)
+                                TriggerServerEvent('LENT-AICalls:Server:GiveCash')
+                                RemoveBlip(WaypointBlip)
+                                CurrentlyOnJob = false
+                            end, function() -- Play When Cancel
+                                ExecuteCommand('e c')
+                            end, Config.ResourceSettings['ReviveItem'])
+                        else
+                            Notify('client', 'You don\'t have ' .. Config.ResourceSettings['ReviveItem'] .. ' on you!', 'error')
+                        end
                     end
                 end,
             },

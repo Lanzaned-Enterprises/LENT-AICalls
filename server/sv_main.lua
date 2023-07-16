@@ -44,11 +44,13 @@ RegisterNetEvent('LENT-AICalls:Server:RemoveItem', function()
     Player.Functions.RemoveItem(Config.ResourceSettings['ReviveItem'], 1)
 end)
 
-QBCore.Commands.Add(Config.ResourceSettings['Job']['Commands']['Name'], Config.ResourceSettings['Job']['Commands']['description'], {}, false, function(source, args)
-    local aop = args[1]
+QBCore.Commands.Add(Config.ResourceSettings['Job']['Commands']['Name'], Config.ResourceSettings['Job']['Commands']['description'], { { name='AOP', help='LS, SS, GS, PB, SA' } }, false, function(source, args)
+    local aop = string.upper(args[1])
 
     if aop ~= nil and aop then
         TriggerClientEvent('LENT-AICalls:Client:ChangeAOP', -1, aop)
+    else
+        Notify('sv', 'Please specify a AOP this resource sets in!', 'error')
     end
 end, Config.ResourceSettings['Job']['Commands']['Permissions'])
 
