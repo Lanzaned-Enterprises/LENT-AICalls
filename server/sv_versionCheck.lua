@@ -1,8 +1,8 @@
 --[[ Version Checker ]] --
-local version = '000'
+local version = '100'
 
 local DISCORD_WEBHOOK = ''
-local DISCORD_NAME = 'LENT - '
+local DISCORD_NAME = 'LENT - AICallouts'
 local DISCORD_IMAGE = 'https://cdn.discordapp.com/attachments/1026175982509506650/1026176123928842270/Lanzaned.png'
 
 local RESOURCE_NAME = 'LENT-AICalls'
