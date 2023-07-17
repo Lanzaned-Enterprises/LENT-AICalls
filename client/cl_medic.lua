@@ -7,7 +7,7 @@ local SetJobCooldown = false
 local PedHasSpawned = false
 local Ped = nil
 
-local AreaOfAiCalls = Config.ResourceSettings['Job']['AOP']
+local AreaOfAiCalls = MedicConfig.ResourceSettings['Job']['AOP']
 
 -- [[ Resource Metadata ]] --
 AddEventHandler('onResourceStop', function(resource)
@@ -36,11 +36,11 @@ RegisterNetEvent('LENT-AICalls:Client:StartMedicMission', function()
     end
 end)
 
-RegisterNetEvent('LENT-AICalls:Client:ChangeAOP', function(newAop)
+RegisterNetEvent('LENT-AICalls:Client:ChangeMedicAOP', function(newAop)
     AreaOfAiCalls = newAop
     local AOPText = nil
 
-    if QBCore.Functions.GetPlayerData().job.name == Config.ResourceSettings['Job']['JobName'] then
+    if QBCore.Functions.GetPlayerData().job.name == MedicConfig.ResourceSettings['Job']['JobName'] then
         if newAop == 'LS' or newAop == 'ls' then
             AOPText = 'Los Santos'
         elseif newAop == 'SS' or newAop == 'ss' then
@@ -65,11 +65,11 @@ function LoadAnimDict(dict)
 end
 
 function GetRandomLocation()
-    GetPedConfig = Config.ResourceSettings['PedLocations'][AreaOfAiCalls]
+    GetPedConfig = MedicConfig.ResourceSettings['PedLocations'][AreaOfAiCalls]
     PedLocation = (GetPedConfig[math.random(#GetPedConfig)])
     Wait(500)
     MedicAlert(PedLocation.x, PedLocation.y, PedLocation.z)
-    if Config.GlobalSettings['Waypoint'] == 'default' then
+    if MedicConfig.GlobalSettings['Waypoint'] == 'default' then
         SetWaypointOff()
     else
         WaypointBlip = AddBlipForCoord(PedLocation.x, PedLocation.y, PedLocation.z)
@@ -90,15 +90,15 @@ function GetRandomLocation()
 end
 
 function SpawnDowned()
-    local selectedPed = math.random(1, #Config.ResourceSettings['PedSelection'])
+    local selectedPed = math.random(1, #MedicConfig.ResourceSettings['PedSelection'])
 
-    RequestModel(Config.ResourceSettings['PedSelection'][selectedPed])
+    RequestModel(MedicConfig.ResourceSettings['PedSelection'][selectedPed])
 
-    while not HasModelLoaded(Config.ResourceSettings['PedSelection'][selectedPed]) do
+    while not HasModelLoaded(MedicConfig.ResourceSettings['PedSelection'][selectedPed]) do
         Wait(0)
     end
 
-    Ped = CreatePed(0, Config.ResourceSettings['PedSelection'][selectedPed], PedLocation.x, PedLocation.y, PedLocation.z - 1, false, false)
+    Ped = CreatePed(0, MedicConfig.ResourceSettings['PedSelection'][selectedPed], PedLocation.x, PedLocation.y, PedLocation.z - 1, false, false)
 
     local deadAnimDict = "dead"
     local deadAnim = "dead_a"
@@ -111,8 +111,8 @@ function SpawnDowned()
 
     PedHasSpawned = true
 
-    if Config.ResourceSettings['Injuries']['InjuriesEnabled'] then
-        ChooseInjury = math.random(#Config.ResourceSettings['Injuries']['InjuryTypes'])
+    if MedicConfig.ResourceSettings['Injuries']['InjuriesEnabled'] then
+        ChooseInjury = math.random(#MedicConfig.ResourceSettings['Injuries']['InjuryTypes'])
     end
 
     exports['qb-target']:AddTargetEntity(Ped, {
@@ -130,10 +130,10 @@ function SpawnDowned()
                     return false
                 end,
                 action = function()
-                    if Config.ResourceSettings['Injuries']['InjuriesEnabled'] then
-                        if QBCore.Functions.HasItem(Config.ResourceSettings['Injuries']['InjuryTypes'][ChooseInjury]['Item']) then
+                    if MedicConfig.ResourceSettings['Injuries']['InjuriesEnabled'] then
+                        if QBCore.Functions.HasItem(MedicConfig.ResourceSettings['Injuries']['InjuryTypes'][ChooseInjury]['Item']) then
                             ExecuteCommand('e medic')
-                            QBCore.Functions.Progressbar('reviving_ped', 'Treating for: ' .. Config.ResourceSettings['Injuries']['InjuryTypes'][ChooseInjury]['Label'] .. '...', 5000, false, true, { -- Name | Label | Time | useWhileDead | canCancel
+                            QBCore.Functions.Progressbar('reviving_ped', 'Treating for: ' .. MedicConfig.ResourceSettings['Injuries']['InjuryTypes'][ChooseInjury]['Label'] .. '...', 5000, false, true, { -- Name | Label | Time | useWhileDead | canCancel
                                 disableMovement = true,
                                 disableCarMovement = true,
                                 disableMouse = false,
@@ -142,24 +142,24 @@ function SpawnDowned()
                                 ExecuteCommand('e c')
                                 PedHasSpawned = false
                                 Wait(500)
-                                TriggerServerEvent('LENT-AICalls:Server:RemoveItem')
-                                TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items[Config.ResourceSettings['Injuries']['InjuryTypes'][ChooseInjury]['Item']], "remove")
+                                TriggerServerEvent('LENT-AICalls:Server:RemoveItem', MedicConfig.ResourceSettings['Injuries']['InjuryTypes'][ChooseInjury]['Item'])
+                                TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items[MedicConfig.ResourceSettings['Injuries']['InjuryTypes'][ChooseInjury]['Item']], "remove")
                                 SetBlockingOfNonTemporaryEvents(Ped, false)
                                 FreezeEntityPosition(Ped, false)
                                 ClearPedTasks(Ped)
                                 SetPedMovementClipset(Ped, "move_injured_generic", 1)
                                 TaskGoStraightToCoord(Ped, 0, 0, 0, 5, 10000, 0)
-                                TriggerServerEvent('LENT-AICalls:Server:GiveCash')
+                                TriggerServerEvent('LENT-AICalls:Server:GiveMedicCash')
                                 RemoveBlip(WaypointBlip)
                                 CurrentlyOnJob = false
                             end, function() -- Play When Cancel
                                 ExecuteCommand('e c')
-                            end, Config.ResourceSettings['Injuries']['InjuryTypes'][ChooseInjury]['Item'])
+                            end, MedicConfig.ResourceSettings['Injuries']['InjuryTypes'][ChooseInjury]['Item'])
                         else
-                            Notify('client', 'You don\'t have ' .. Config.ResourceSettings['Injuries']['InjuryTypes'][ChooseInjury]['Item'] .. ' on you!', 'error')
+                            Notify('client', 'You don\'t have ' .. MedicConfig.ResourceSettings['Injuries']['InjuryTypes'][ChooseInjury]['Item'] .. ' on you!', 'error')
                         end
                     else
-                        if QBCore.Functions.HasItem(Config.ResourceSettings['ReviveItem']) then
+                        if QBCore.Functions.HasItem(MedicConfig.ResourceSettings['ReviveItem']) then
                             ExecuteCommand('e medic')
                             QBCore.Functions.Progressbar('reviving_ped', 'Treating Injuries....', 5000, false, true, { -- Name | Label | Time | useWhileDead | canCancel
                                 disableMovement = true,
@@ -171,7 +171,7 @@ function SpawnDowned()
                                 PedHasSpawned = false
                                 Wait(500)
                                 TriggerServerEvent('LENT-AICalls:Server:RemoveItem')
-                                TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items[Config.ResourceSettings['ReviveItem']], "remove")
+                                TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items[MedicConfig.ResourceSettings['ReviveItem']], "remove")
                                 SetBlockingOfNonTemporaryEvents(Ped, false)
                                 FreezeEntityPosition(Ped, false)
                                 ClearPedTasks(Ped)
@@ -182,9 +182,9 @@ function SpawnDowned()
                                 CurrentlyOnJob = false
                             end, function() -- Play When Cancel
                                 ExecuteCommand('e c')
-                            end, Config.ResourceSettings['ReviveItem'])
+                            end, MedicConfig.ResourceSettings['ReviveItem'])
                         else
-                            Notify('client', 'You don\'t have ' .. Config.ResourceSettings['ReviveItem'] .. ' on you!', 'error')
+                            Notify('client', 'You don\'t have ' .. MedicConfig.ResourceSettings['ReviveItem'] .. ' on you!', 'error')
                         end
                     end
                 end,
