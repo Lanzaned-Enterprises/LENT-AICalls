@@ -107,9 +107,9 @@ function SpawnCrime(CrimeKey)
     if CrimeKey == 'GUNSHOT_REPORTED' then
         TriggerServerEvent('LENT-AICalls:Server:CreateCrimePed')
     elseif CrimeKey == 'DOMESTICATED_DISPUTE' then
-
+        TriggerServerEvent('LENT-AICalls:Server:CreateDomesticDispute')
     elseif CrimeKey == 'MUGGING' then
-
+        TriggerServerEvent('LENT-AICalls:Server:CreateMugging')
     else
         Notify('cl', 'You created a setting with a invalid HARD_KEY!', 'error')
     end
@@ -176,7 +176,7 @@ RegisterNetEvent('LENT-AICalls:Client:CreateCrimePed', function(citizenid)
                             ExecuteCommand('e c')
                             PedHasSpawned = false
                             Wait(500)
-                            TriggerServerEvent('LENT-AICalls:Server:RemovePoliceCallPed')
+                            TriggerServerEvent('LENT-AICalls:Server:RemovePoliceCallPed', citizenid)
                             RemoveBlip(LEOCallblip)
                             CurrentlyOnJob = false
                             Notify('client', 'Coroner came and picked up the body!', 'success')
@@ -190,6 +190,87 @@ RegisterNetEvent('LENT-AICalls:Client:CreateCrimePed', function(citizenid)
             disance = 2.0
         })
     end
+end)
+
+RegisterNetEvent('LENT-AICalls:Client:CreateDomesticDispute', function(citizenid)
+    local SelectCrimePed = math.random(1, #PoliceConfig.ResourceSettings['PedSelection'])
+
+    RequestModel(PoliceConfig.ResourceSettings['PedSelection'][SelectCrimePed])
+
+    while not HasModelLoaded(PoliceConfig.ResourceSettings['PedSelection'][SelectCrimePed]) do
+        Wait(0)
+    end
+
+    citizenid = CreatePed(0, PoliceConfig.ResourceSettings['PedSelection'][SelectCrimePed], SetPedLocation.x, SetPedLocation.y, SetPedLocation.z - 1, SetPedLocation.w, false, false)
+
+    SetPedRelationshipGroupHash(citizenid, GetHashKey('PLAYER'))
+    AddRelationshipGroup('LENTAICallsHostile')
+
+    NetworkRegisterEntityAsNetworked(citizenid)
+    NetworkID = NetworkGetNetworkIdFromEntity(citizenid)
+    SetNetworkIdCanMigrate(NetworkID, true)
+
+    GiveWeaponToPed(citizenid, 'WEAPON_KNIFE', 255, true, true)
+
+    SetNetworkIdExistsOnAllMachines(networkID, true)
+    SetEntityAsMissionEntity(citizenid)
+    SetPedDropsWeaponsWhenDead(citizenid, false)
+    SetPedRelationshipGroupHash(citizenid, GetHashKey("LENTAICallsHostile"))
+    SetEntityVisible(citizenid, true)
+    SetPedRandomComponentVariation(citizenid, 0)
+    SetPedRandomProps(citizenid)
+
+    SetPedAlertness(citizenid, 3)
+    SetPedCombatMovement(citizenid, 3)
+
+    SetRelationshipBetweenGroups(0, GetHashKey("LENTAICallsHostile"), GetHashKey("LENTAICallsHostile"))
+    SetRelationshipBetweenGroups(5, GetHashKey("LENTAICallsHostile"), GetHashKey("PLAYER"))
+    SetRelationshipBetweenGroups(5, GetHashKey("PLAYER"), GetHashKey("LENTAICallsHostile"))
+
+    PedHasBeenSpawned = true
+
+    if PedHasBeenSpawned then
+        exports['qb-target']:AddTargetEntity(citizenid, {
+            options = {
+                {
+                    type = 'client',
+                    label = 'Calling for D.O.C.',
+                    icon = 'fa-solid fa-phone',
+                    canInteract = function()
+                        if PedHasBeenSpawned and IsEntityDead(citizenid) then
+                            return true
+                        end
+
+                        return false
+                    end,
+                    action = function()
+                        ExecuteCommand('e phonecall')
+                        QBCore.Functions.Progressbar('lentcalldoc', 'Calling D.O.C.', 5000, false, true, { -- Name | Label | Time | useWhileDead | canCancel
+                            disableMovement = false,
+                            disableCarMovement = true,
+                            disableMouse = false,
+                            disableCombat = true,
+                        }, {}, {}, {}, function() -- Play When Done
+                            ExecuteCommand('e c')
+                            PedHasSpawned = false
+                            Wait(500)
+                            TriggerServerEvent('LENT-AICalls:Server:RemovePoliceCallPed', citizenid)
+                            RemoveBlip(LEOCallblip)
+                            CurrentlyOnJob = false
+                            Notify('client', 'D.O.C. came and picked up a suspect!', 'success')
+                        end, function() -- Play When Cancel
+                            ExecuteCommand('e c')
+                            Notify('client', 'You stopped calling for D.O.C.', 'error')
+                        end)
+                    end,
+                },
+            },
+            disance = 2.0
+        })
+    end
+end)
+
+RegisterNetEvent('LENT-AICalls:Client:CreateMugging', function(citizenid)
 end)
 
 RegisterNetEvent('LENT-AICalls:Client:RemovePoliceCallPed', function(citizenid)

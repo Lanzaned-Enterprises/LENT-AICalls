@@ -19,14 +19,23 @@ QBCore.Commands.Add(PoliceConfig.ResourceSettings['Job']['Commands']['Name'], Po
 end, PoliceConfig.ResourceSettings['Job']['Commands']['Permissions'])
 
 -- [[ Net Events ]] --
+RegisterNetEvent('LENT-AICalls:Server:RemovePoliceCallPed', function(citizenid)
+    TriggerClientEvent('LENT-AICalls:Client:RemovePoliceCallPed', -1, citizenid)
+end)
+
 RegisterNetEvent('LENT-AICalls:Server:CreateCrimePed', function()
     local citizenid = QBCore.Functions.GetPlayer(source).citizenid
     TriggerClientEvent('LENT-AICalls:Client:CreateCrimePed', -1, citizenid)
 end)
 
-RegisterNetEvent('LENT-AICalls:Server:RemovePoliceCallPed', function()
+RegisterNetEvent('LENT-AICalls:Server:CreateDomesticDispute', function()
     local citizenid = QBCore.Functions.GetPlayer(source).citizenid
-    TriggerClientEvent('LENT-AICalls:Client:RemovePoliceCallPed', -1, citizenid)
+    TriggerClientEvent('LENT-AICalls:Client:CreateDomesticDispute', -1, citizenid)
+end)
+
+RegisterNetEvent('LENT-AICalls:Server:CreateMugging', function()
+    local citizenid = QBCore.Functions.GetPlayer(source).citizenid
+    TriggerClientEvent('LENT-AICalls:Client:CreateMugging', -1, citizenid)
 end)
 
 -- [[ Functions ]] --
