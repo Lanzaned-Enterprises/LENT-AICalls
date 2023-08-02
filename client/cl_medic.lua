@@ -69,7 +69,7 @@ function GetRandomLocation()
     PedLocation = (GetPedConfig[math.random(#GetPedConfig)])
     Wait(500)
     MedicAlert(PedLocation.x, PedLocation.y, PedLocation.z)
-    if MedicConfig.GlobalSettings['Waypoint'] == 'default' then
+    if Config.GlobalSettings['Waypoint'] == 'default' then
         SetWaypointOff()
     else
         WaypointBlip = AddBlipForCoord(PedLocation.x, PedLocation.y, PedLocation.z)

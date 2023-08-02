@@ -19,8 +19,6 @@ PoliceConfig.ResourceSettings = {
             ['doc'] = true,
         },
     },
-    ['Payment'] = math.random(150, 200),
-    ['PayCash'] = false, -- true = cash | false = bank
     ['PedLocations'] = {
         ['LS'] = {
             [1] = vector4(-656.8, -677.85, 31.49, 305.78),

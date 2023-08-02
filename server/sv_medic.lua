@@ -20,7 +20,7 @@ RegisterNetEvent('LENT-AICalls:Server:GiveMedicCash', function()
         end
     else
         if Player.Functions.AddMoney('bank', paycheck) then
-            if MedicConfig.GlobalSettings['RenewedBanking'] then
+            if Config.GlobalSettings['RenewedBanking'] then
                 local cid = Player.PlayerData.citizenid
                 local title = 'Hospital Salary'
                 local name = ('%s %s'):format(Player.PlayerData.charinfo.firstname, Player.PlayerData.charinfo.lastname)

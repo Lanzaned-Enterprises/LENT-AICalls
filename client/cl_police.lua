@@ -143,6 +143,14 @@ RegisterNetEvent('LENT-AICalls:Client:CreateCrimePed', function(citizenid)
     SetPedRandomComponentVariation(citizenid, 0)
     SetPedRandomProps(citizenid)
 
+    SetPedAlertness(citizenid, 3)
+    SetPedCombatMovement(citizenid, 3)
+    SetPedCombatRange(citizenid, 2)
+    SetPedCombatAbility(citizenid, 2)
+    SetPedCombatAttributes(citizenid, 46, true)
+
+    TaskCombatPed(citizenid, player, 0, 16)
+
     SetRelationshipBetweenGroups(0, GetHashKey("LENTAICallsHostile"), GetHashKey("LENTAICallsHostile"))
     SetRelationshipBetweenGroups(5, GetHashKey("LENTAICallsHostile"), GetHashKey("PLAYER"))
     SetRelationshipBetweenGroups(5, GetHashKey("PLAYER"), GetHashKey("LENTAICallsHostile"))
@@ -193,6 +201,7 @@ RegisterNetEvent('LENT-AICalls:Client:CreateCrimePed', function(citizenid)
 end)
 
 RegisterNetEvent('LENT-AICalls:Client:CreateDomesticDispute', function(citizenid)
+    local player = PlayerPedId()
     local SelectCrimePed = math.random(1, #PoliceConfig.ResourceSettings['PedSelection'])
 
     RequestModel(PoliceConfig.ResourceSettings['PedSelection'][SelectCrimePed])
@@ -203,8 +212,8 @@ RegisterNetEvent('LENT-AICalls:Client:CreateDomesticDispute', function(citizenid
 
     citizenid = CreatePed(0, PoliceConfig.ResourceSettings['PedSelection'][SelectCrimePed], SetPedLocation.x, SetPedLocation.y, SetPedLocation.z - 1, SetPedLocation.w, false, false)
 
-    SetPedRelationshipGroupHash(citizenid, GetHashKey('PLAYER'))
     AddRelationshipGroup('LENTAICallsHostile')
+    SetPedRelationshipGroupHash(citizenid, GetHashKey('PLAYER'))
 
     NetworkRegisterEntityAsNetworked(citizenid)
     NetworkID = NetworkGetNetworkIdFromEntity(citizenid)
@@ -222,6 +231,11 @@ RegisterNetEvent('LENT-AICalls:Client:CreateDomesticDispute', function(citizenid
 
     SetPedAlertness(citizenid, 3)
     SetPedCombatMovement(citizenid, 3)
+    SetPedCombatRange(citizenid, 2)
+    SetPedCombatAbility(citizenid, 2)
+    SetPedCombatAttributes(citizenid, 46, true)
+
+    TaskCombatPed(citizenid, player, 0, 16)
 
     SetRelationshipBetweenGroups(0, GetHashKey("LENTAICallsHostile"), GetHashKey("LENTAICallsHostile"))
     SetRelationshipBetweenGroups(5, GetHashKey("LENTAICallsHostile"), GetHashKey("PLAYER"))
