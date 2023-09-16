@@ -127,7 +127,7 @@ MedicConfig.ResourceSettings = {
         [19] = `a_m_y_vinewood_01`,
         [20] = `cs_amandatownley`,
     },
-    ['Injuries'] = { -- [ TO BE INTEGRATED ]
+    ['Injuries'] = {
         ['InjuriesEnabled'] = true,
         ['InjuryTypes'] = {
             -- ['KEY'] = { ['Label'] = '', ['Item'] = '', },

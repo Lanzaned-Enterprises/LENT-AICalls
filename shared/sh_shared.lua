@@ -11,7 +11,7 @@ Config.GlobalSettings = {
 function Notify(clsv, text, type, time)
     if clsv == 'cl' or clsv == 'client' then
         if Config.GlobalSettings['Notify'] == 'qb' then
-            QBCore.Functions.Notify(text, type, time)
+            TriggerEvent('QBCore:Notify', text, type, time)
         elseif Config.GlobalSettings['Notify'] == 'ps' then
             TriggerEvent("ps-ui:client:notify", text, type)
         elseif Config.GlobalSettings['Notify'] == 'custom' then

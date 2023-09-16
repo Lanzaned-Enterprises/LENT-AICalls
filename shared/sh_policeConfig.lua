@@ -2,7 +2,7 @@ PoliceConfig = {}
 
 PoliceConfig.ResourceSettings = {
     ['Job'] = {
-        ['AOP'] = 'LS', -- LS, SS, GS, PB, SA
+        ['AOP'] = 'SA', -- LS, SS, GS, PB, SA
         -- LS: Los Santos | SS: Sandy Shores | GS: Grapeseed | PB: Paleto Bay | SA: San Andreas
         ['Commands'] = {
             ['Name'] = 'pdcalls',
@@ -17,6 +17,13 @@ PoliceConfig.ResourceSettings = {
             ['police'] = true,
             ['bcso'] = true,
             ['doc'] = true,
+        },
+    },
+    ['Duty'] = {
+        ['DutyType'] = false, -- Command | false
+        ['DutyCommand'] = {
+            ['Name'] = "triggerpdcallout",
+            ['Description'] = "Triggers a callout for Law Enforcement to see",
         },
     },
     ['PedLocations'] = {
@@ -53,16 +60,55 @@ PoliceConfig.ResourceSettings = {
             [30] = vector4(379.78, -658.79, 29.2, 164.06),
         },
         ['SS'] = {
-            -- Coming Soon!
+            [1] = vector4(1124.63, 2643.66, 38.14, 5.72),
+            [2] = vector4(969.33, 2711.01, 39.48, 163.42),
+            [3] = vector4(590.32, 2742.72, 42.05, 190.48),
+            [4] = vector4(340.56, 2579.77, 43.53, 84.82),
+            [5] = vector4(203.1, 3086.79, 42.62, 198.28),
+            [6] = vector4(1394.87, 3597.93, 34.98, 185.96),
+            [7] = vector4(1502.03, 3702.29, 39.06, 32.91),
+            [8] = vector4(1543.81, 3785.13, 34.22, 197.46),
+            [9] = vector4(1668.43, 3814.54, 34.9, 290.65),
+            [10] = vector4(1756.68, 3871.46, 34.87, 323.02),
+            [11] = vector4(1890.88, 3868.33, 32.53, 210.32),
+            [12] = vector4(1853.43, 3758.14, 33.08, 158.76),
+            [13] = vector4(2487.11, 4098.82, 38.03, 76.18),
+            [14] = vector4(2168.65, 3333.38, 46.4, 352.86),
+            [15] = vector4(2165.97, 3374.8, 45.25, 255.88),
+            [16] = vector4(2002.11, 3052.92, 47.21, 33.68),
+            [17] = vector4(1591.43, 2900.5, 57.12, 127.0),
+            [18] = vector4(886.42, 2857.69, 56.53, 113.99),
+            [19] = vector4(866.43, 2871.56, 57.21, 180.73),
+            [20] = vector4(512.04, 3083.84, 40.42, 109.97),
         },
         ['GS'] = {
-            -- Coming Soon!
+            [1] = vector4(1686.71, 4695.55, 42.8, 317.37),
+            [2] = vector4(1681.19, 4838.89, 42.13, 114.88),
+            [3] = vector4(2426.75, 4971.59, 45.88, 3.44),
+            [4] = vector4(2461.33, 4966.41, 45.32, 221.71),
+            [5] = vector4(1965.72, 4636.16, 40.81, 48.24),
+            [6] = vector4(1347.78, 4362.32, 44.26, 245.05),
+            [7] = vector4(1668.63, 4764.03, 41.92, 340.6),
+            [8] = vector4(1658.48, 4850.25, 41.97, 267.93),
+            [9] = vector4(1945.04, 5169.03, 46.72, 105.56),
+            [10] = vector4(2563.94, 5081.77, 44.51, 313.98),
         },
         ['PB'] = {
-            -- Coming Soon!
-        },
-        ['SA'] = {
-            -- Coming Soon!
+            [1] = vector4(-249.87, 6162.11, 31.51, 296.51),
+            [2] = vector4(-271.34, 6280.35, 31.47, 294.12),
+            [3] = vector4(-210.35, 6437.06, 31.4, 262.06),
+            [4] = vector4(-304.5, 6330.04, 32.49, 39.06),
+            [5] = vector4(-390.45, 6301.2, 29.51, 189.36),
+            [6] = vector4(-378.86, 6185.75, 31.49, 229.52),
+            [7] = vector4(-146.76, 6437.95, 31.44, 310.05),
+            [8] = vector4(8.86, 6526.13, 31.38, 14.75),
+            [9] = vector4(-90.15, 6356.19, 35.5, 246.42),
+            [10] = vector4(-266.15, 6083.71, 31.4, 130.31),
+            [11] = vector4(-697.1, 5802.68, 17.33, 30.47),
+            [12] = vector4(-702.82, 5778.4, 17.33, 17.03),
+            [13] = vector4(-760.54, 5563.32, 36.71, 180.71),
+            [14] = vector4(-511.09, 5302.94, 80.24, 178.03),
+            [15] = vector4(25.01, 6657.09, 31.58, 191.0),
         },
     },
     ['PedSelection'] = {
@@ -89,11 +135,12 @@ PoliceConfig.ResourceSettings = {
     },
     ['Crimes'] = {
         ['CrimeTypes'] = {
-            -- [0] = { ['HARD_KEY'] = 'DO_NOT_CHANGE_THESE',    ['DispatchCode'] = '10-00', ['Label'] = 'Call Description',     },
-            [1] = { ['HARD_KEY'] = 'GUNSHOT_REPORTED',          ['DispatchCode'] = '10-13', ['Label'] = 'Gunshots Reported',    },
-            [2] = { ['HARD_KEY'] = 'DOMESTICATED_DISPUTE',      ['DispatchCode'] = '10-25', ['Label'] = 'Domestic Dispute',     },
+            -- [0] = { ['HARD_KEY'] = 'DO_NOT_CHANGE_THESE',    ['DispatchCode'] = '10-00',     ['Label'] = 'Call Description',     },
+            [2] = { ['HARD_KEY'] = 'DOMESTICATED_DISPUTE',      ['DispatchCode'] = '10-25',         ['Label'] = 'Domestic Dispute',     },
             -- [[ THE BELOW ARE NOT INTERGRATED!!! DO NOT!!! ENABLE!!! ]] --
+            -- [1] = { ['HARD_KEY'] = 'GUNSHOT_REPORTED',          ['DispatchCode'] = '10-13',         ['Label'] = 'Gunshots Reported',    },
             -- [3] = { ['HARD_KEY'] = 'MUGGING',                   ['DispatchCode'] = '10-17', ['Label'] = 'Suspicious Person',    },
+            -- [4] = { ['HARD_KEY'] = 'SIGNAL100',                 ['DispatchCode'] = 'SIGNAL-100',    ['Label'] = 'Officer Down'          },
         },
     },
 }
@@ -123,9 +170,9 @@ function PoliceAlert(x, y, z, DispatchCode, Label)
             unique_id = data.unique_id,
             sound = 1,
             blip = {
-                sprite = 280,
-                scale = 1.0,
-                colour = 23,
+                sprite = 0,
+                scale = 0,
+                colour = 0,
                 flashes = false,
                 text = Label,
                 time = 5,
