@@ -1,5 +1,5 @@
 --[[ Version Checker ]] --
-local version = '110'
+local version = '115'
 
 local DISCORD_WEBHOOK = ''
 local DISCORD_NAME = 'LENT - AICallouts'

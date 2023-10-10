@@ -11,6 +11,13 @@ MedicConfig.ResourceSettings = {
             ['Permissions'] = 'directors',
         },
     },
+    ['Duty'] = {
+        ['DutyType'] = false, -- Command | false
+        ['DutyCommand'] = {
+            ['Name'] = "triggeremscallout",
+            ['Description'] = "Triggers a callout for EMS to see",
+        },
+    },
     ['ReviveItem'] = 'firstaid', -- Should be in Items.lua
     ['Payment'] = math.random(75, 150),
     ['PayCash'] = false, -- true = cash / false = bank

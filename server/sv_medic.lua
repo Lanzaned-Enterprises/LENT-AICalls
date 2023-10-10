@@ -5,6 +5,28 @@ local QBCore = exports['qb-core']:GetCoreObject()
 
 -- [[ Resource Metadata ]] --
 
+-- [[ Commands ]] --
+QBCore.Commands.Add(MedicConfig.ResourceSettings['Job']['Commands']['Name'], MedicConfig.ResourceSettings['Job']['Commands']['description'], { { name='AOP', help='LS, SS, GS, PB, SA' } }, false, function(source, args)
+    local aop = string.upper(args[1])
+
+    if aop ~= nil and aop then
+        TriggerClientEvent('LENT-AICalls:Client:ChangeMedicAOP', -1, aop)
+    else
+        Notify('sv', 'Please specify a AOP this resource sets in!', 'error')
+    end
+end, MedicConfig.ResourceSettings['Job']['Commands']['Permissions'])
+
+if MedicConfig.ResourceSettings['Duty']['DutyType'] == "Command" or MedicConfig.ResourceSettings['Duty']['DutyType'] == "command" then
+    QBCore.Commands.Add(MedicConfig.ResourceSettings['Duty']['DutyCommand']['Name'], MedicConfig.ResourceSettings['Duty']['DutyCommand']['Description'], {}, false, function(source, args)
+        local src = source
+        local Player = QBCore.Functions.GetPlayer(src)
+
+        if Player.PlayerData.job.name == "ambulance" then
+            TriggerClientEvent('LENT-AICalls:Client:StartMedicMission', src)
+        end
+    end)
+end
+
 -- [[ Net Events ]] --
 RegisterNetEvent('LENT-AICalls:Server:GiveMedicCash', function()
     local src = source
@@ -43,16 +65,6 @@ RegisterNetEvent('LENT-AICalls:Server:RemoveItem', function(item)
 
     Player.Functions.RemoveItem(item, 1)
 end)
-
-QBCore.Commands.Add(MedicConfig.ResourceSettings['Job']['Commands']['Name'], MedicConfig.ResourceSettings['Job']['Commands']['description'], { { name='AOP', help='LS, SS, GS, PB, SA' } }, false, function(source, args)
-    local aop = string.upper(args[1])
-
-    if aop ~= nil and aop then
-        TriggerClientEvent('LENT-AICalls:Client:ChangeMedicAOP', -1, aop)
-    else
-        Notify('sv', 'Please specify a AOP this resource sets in!', 'error')
-    end
-end, MedicConfig.ResourceSettings['Job']['Commands']['Permissions'])
 
 -- [[ Functions ]] --
 
